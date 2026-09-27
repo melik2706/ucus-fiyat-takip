@@ -1,5 +1,5 @@
 """Uçuş veri modeli ve plan uygunluk kontrolü."""
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 
 TR_TZ = timezone(timedelta(hours=3))  # Türkiye kalıcı olarak UTC+3
@@ -13,12 +13,35 @@ class Flight:
     departure: datetime  # yerel saat (naive)
     arrival: datetime
     airline: str
-    price: int
+    price: int  # kaynaklar arasındaki en düşük fiyat
     search_url: str = ""
+    sources: tuple[tuple[str, int], ...] = ()  # (("Google", 2200), ("Kiwi", 2701))
 
     @property
     def key(self) -> str:
-        return f"{self.origin}-{self.dest}_{self.departure:%Y-%m-%dT%H:%M}_{self.airline}"
+        # Aynı rota + aynı kalkış dakikası tek bir direkt uçuştur; havayolu adı kaynağa göre değişebilir
+        return f"{self.origin}-{self.dest}_{self.departure:%Y-%m-%dT%H:%M}"
+
+
+def merge_sources(flights: list[Flight]) -> list[Flight]:
+    """Farklı kaynaklardan gelen aynı uçuşları tek kayıtta birleştirir (fiyat = en düşük)."""
+    grouped: dict[str, list[Flight]] = {}
+    for f in flights:
+        grouped.setdefault(f.key, []).append(f)
+    merged = []
+    for group in grouped.values():
+        prices: dict[str, int] = {}
+        for f in group:
+            for name, price in f.sources:
+                prices[name] = min(price, prices.get(name, price))
+        base = next((f for f in group if f.search_url), group[0])
+        if not prices:
+            merged.append(min(group, key=lambda f: f.price))
+            continue
+        merged.append(
+            replace(base, price=min(prices.values()), sources=tuple(sorted(prices.items())))
+        )
+    return merged
 
 
 def is_pinned(flight: Flight, pinned: list[dict]) -> bool:

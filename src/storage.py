@@ -8,7 +8,7 @@ from .models import Flight
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 STATE_FILE = DATA_DIR / "state.json"
 HISTORY_FILE = DATA_DIR / "price_history.csv"
-HISTORY_HEADER = ["checked_at", "leg", "origin", "dest", "departure", "arrival", "airline", "price"]
+HISTORY_HEADER = ["checked_at", "leg", "origin", "dest", "departure", "arrival", "airline", "price", "google", "kiwi"]
 
 
 def load_state() -> dict:
@@ -35,4 +35,5 @@ def append_history(flights: list[Flight], checked_at: str) -> None:
             w.writerow([
                 checked_at, f.leg, f.origin, f.dest,
                 f"{f.departure:%Y-%m-%d %H:%M}", f"{f.arrival:%Y-%m-%d %H:%M}", f.airline, f.price,
+                dict(f.sources).get("Google", ""), dict(f.sources).get("Kiwi", ""),
             ])

@@ -14,41 +14,53 @@ from pathlib import Path
 
 from src import storage, telegram
 from src.alerts import evaluate
-from src.fetch import fetch_search
+from src.fetch import fetch_search as google_fetch
+from src.kiwi import fetch_search as kiwi_fetch
 from src.messages import alert_message, summary_message
-from src.models import TR_TZ, Flight, missing_pinned
+from src.models import TR_TZ, Flight, merge_sources, missing_pinned
 
 CONFIG_FILE = Path(__file__).resolve().parent / "config.json"
-FETCH_RETRIES = 4
-RETRY_DELAY_SEC = (20, 60)
+FETCH_RETRIES = 3
+RETRY_DELAY_SEC = (15, 40)
 # Düzenli bir robot izi bırakmamak için: başlangıç saati ve sorgular arası bekleme rastgele
-START_JITTER_SEC = (0, 900)
-BETWEEN_QUERIES_SEC = (6, 25)
+START_JITTER_SEC = (0, 180)
+BETWEEN_QUERIES_SEC = (3, 12)
+
+
+SOURCES = {"Google": google_fetch, "Kiwi": kiwi_fetch}
+
+
+def _fetch_with_retry(fetch, search: dict, currency: str, label: str, jitter: bool) -> list[Flight]:
+    for attempt in range(1, FETCH_RETRIES + 1):
+        try:
+            return fetch(search, currency)
+        except Exception as exc:  # ağ/parsing hataları: tekrar dene, sonra üst katmana bildir
+            print(f"{label}: hata (deneme {attempt}): {exc}")
+            if attempt == FETCH_RETRIES:
+                raise
+            time.sleep(random.uniform(*RETRY_DELAY_SEC) if jitter else 2)
+    return []
 
 
 def fetch_all(cfg: dict, jitter: bool) -> tuple[list[Flight], list[str], set[tuple[str, str, str]]]:
-    flights: list[Flight] = []
+    """Tüm aramaları tüm kaynaklardan çeker ve aynı uçuşları birleştirir."""
+    raw: list[Flight] = []
     errors: list[str] = []
     succeeded: set[tuple[str, str, str]] = set()
-    searches = random.sample(cfg["searches"], k=len(cfg["searches"]))  # sıra her seferinde farklı
-    for i, search in enumerate(searches):
+    jobs = [(name, s) for s in cfg["searches"] for name in SOURCES]
+    for i, (name, search) in enumerate(random.sample(jobs, k=len(jobs))):  # sıra her seferinde farklı
         if jitter and i > 0:
             time.sleep(random.uniform(*BETWEEN_QUERIES_SEC))
-        label = f"{search['date']} {search['from']}→{search['to']}"
-        for attempt in range(1, FETCH_RETRIES + 1):
-            try:
-                found = fetch_search(search, cfg["currency"])
-                print(f"{label}: {len(found)} direkt uçuş")
-                flights.extend(found)
-                succeeded.add((search["date"], search["from"], search["to"]))
-                break
-            except Exception as exc:  # ağ/parsing hataları: tekrar dene, sonra raporla
-                print(f"{label}: hata (deneme {attempt}): {exc}")
-                if attempt == FETCH_RETRIES:
-                    errors.append(f"{label}: {exc}")
-                else:
-                    time.sleep(random.uniform(*RETRY_DELAY_SEC))
-    return flights, errors, succeeded
+        label = f"[{name}] {search['date']} {search['from']}→{search['to']}"
+        try:
+            found = _fetch_with_retry(SOURCES[name], search, cfg["currency"], label, jitter)
+        except Exception as exc:
+            errors.append(f"{label}: {exc}")
+            continue
+        print(f"{label}: {len(found)} direkt uçuş")
+        raw.extend(found)
+        succeeded.add((search["date"], search["from"], search["to"]))
+    return merge_sources(raw), errors, succeeded
 
 
 def run(dry_run: bool) -> int:

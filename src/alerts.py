@@ -9,6 +9,7 @@ class Alert:
     flight: Flight
     reasons: tuple[str, ...]  # "new_low" | "target" | "new_flight"
     previous_min: int | None
+    previous_sources: tuple[tuple[str, int], ...] = ()
 
 
 def evaluate(flights: list[Flight], state: dict, cfg: dict, now_iso: str) -> tuple[dict, list[Alert]]:
@@ -26,6 +27,7 @@ def evaluate(flights: list[Flight], state: dict, cfg: dict, now_iso: str) -> tup
         prev = old.get(f.key)
         prev_min = prev["min_price"] if prev else None
         prev_target_alert = prev.get("target_alerted_price") if prev else None
+        prev_sources = tuple(sorted((prev.get("sources") or {}).items())) if prev else ()
 
         reasons = []
         if prev is None and not is_first_run:
@@ -38,11 +40,12 @@ def evaluate(flights: list[Flight], state: dict, cfg: dict, now_iso: str) -> tup
 
         plan_ok = fits_plan(f, cfg["plan"]) or is_pinned(f, cfg.get("pinned_flights", []))
         if reasons and plan_ok:
-            alerts.append(Alert(flight=f, reasons=tuple(reasons), previous_min=prev_min))
+            alerts.append(Alert(f, tuple(reasons), prev_min, prev_sources))
 
         new_flights[f.key] = {
             "leg": f.leg,
             "price": f.price,
+            "sources": dict(f.sources),
             "min_price": min(f.price, prev_min) if prev_min is not None else f.price,
             "first_seen": prev["first_seen"] if prev else now_iso,
             "last_seen": now_iso,

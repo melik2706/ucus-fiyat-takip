@@ -2,7 +2,7 @@ name: Uçuş fiyat takibi
 
 on:
   schedule:
-    - cron: "17 */3 * * *"  # 3 saatte bir (UTC); main.py ayrıca 0-15 dk rastgele gecikme ekler
+    - cron: "7,37 * * * *"  # 30 dakikada bir; main.py ayrıca 0-3 dk rastgele gecikme ekler
   workflow_dispatch: {}
 
 permissions:
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   track:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 

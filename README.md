@@ -1,11 +1,16 @@
 # Gaziantep ⇄ Ankara uçuş fiyat takibi
 
-Google Flights'tan (ücretsiz `fast-flights` kütüphanesi, API anahtarı gerekmez) yaklaşık 3 saatte bir direkt uçuş fiyatlarını çeker ve Telegram'a bildirim gönderir.
+İki bağımsız kaynaktan, **Google Flights** (`fast-flights`) ve **Kiwi.com** (herkese açık GraphQL), 30 dakikada bir direkt uçuş fiyatlarını çeker, çapraz kontrol yapar ve Telegram'a bildirim gönderir. Tamamen ücretsizdir, API anahtarı gerekmez.
 
 ## Takip edilenler (`config.json`)
 - 2 Kasım GZT→ESB, 3 Kasım GZT→ESB ve 3 Kasım ESB→GZT yönlerindeki tüm direkt uçuşlar
 - ⭐ Sabitlenmiş uçuşlar: gidişte 2 Kas 21:20 ve 3 Kas 04:50 (GZT→ESB), dönüşte 3 Kas 19:25 ve 23:50 (ESB→GZT). Sonuçlarda görünmezlerse ayrıca uyarı gelir.
 - Plana uyan uçuşlar: gidişte 2 Kas 17:00 sonrası kalkış ve 3 Kas 07:45'ten önce varış; dönüşte 3 Kas 15:30 ile 4 Kas 03:00 arası kalkış
+
+## Çapraz kontrol
+- Aynı uçuşun her iki kaynaktaki fiyatı yan yana gösterilir; uyarılar en düşük fiyata göre verilir.
+- ✅ İki kaynakta da düştüyse gerçek indirimdir. ⚠️ Sadece birinde düştüyse o siteden kontrol ederek al.
+- Kiwi fiyatı kendi hizmet bedelini içerdiği için genelde ~500 TL yüksektir. Google fiyatı havayolunun kendi fiyatına yakındır.
 
 ## Bildirimler
 - 📉 Plana uyan bir uçuş şimdiye kadar görülen en düşük fiyatının altına inerse
@@ -28,5 +33,5 @@ Fiyat geçmişi `data/price_history.csv` dosyasında tutulur.
 - Kimlik yok: Giriş yapılmaz, e-posta veya telefon gönderilmez. Her sorgu çerezsiz, sıfırdan açılan bir oturumla yapılır.
 - IP bağı yok: Sorgular GitHub'ın bulut sunucularından gider. Senin ev/telefon IP'n kullanılmaz ve sunucu her çalıştırmada değişir.
 - Havayolu sitesine gidilmez: Sadece Google Flights (fiyat karşılaştırma) sorgulanır. AJet/THY sitelerine hiç istek atılmaz.
-- Robot izi yok: Başlangıç saati 0–15 dk, sorgular arası bekleme 6–25 sn rastgele ve sorgu sırası her seferinde karışık. Günde yalnızca yaklaşık 8 kontrol yapılır.
+- Robot izi yok: Başlangıç saati 0–3 dk, sorgular arası bekleme 3–12 sn rastgele; kaynak ve sorgu sırası her seferinde karışık.
 - Bileti alırken havayolu/acente sitesine gizli sekmeden (incognito) gir.

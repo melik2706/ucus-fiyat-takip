@@ -100,3 +100,37 @@ def test_messages_render():
     _, alerts = evaluate([cheaper], state, CFG, "t1")
     msg = alert_message(alerts, [cheaper, EVENING_RET], CFG)
     assert "−239 TL" in msg and "Hedef fiyatın altında" in msg
+
+
+def src(flight, *pairs):
+    from dataclasses import replace
+    return replace(flight, price=min(p for _, p in pairs), sources=tuple(pairs))
+
+
+def test_merge_combines_same_flight_from_two_sources():
+    from src.models import merge_sources
+    g = src(EARLY, ("Google", 2200))
+    k = src(EARLY, ("Kiwi", 2701))
+    merged = merge_sources([g, k, src(EVENING_RET, ("Kiwi", 2300))])
+    by_key = {f.key: f for f in merged}
+    assert len(merged) == 2
+    assert by_key[EARLY.key].price == 2200
+    assert by_key[EARLY.key].sources == (("Google", 2200), ("Kiwi", 2701))
+
+
+def test_cross_check_verdicts():
+    from src.messages import cross_check
+    both = src(EARLY, ("Google", 2100), ("Kiwi", 2600))
+    assert "iki kaynakta da düştü" in cross_check(both, (("Google", 2200), ("Kiwi", 2701)))
+    one = src(EARLY, ("Google", 2100), ("Kiwi", 2701))
+    assert "Sadece Google" in cross_check(one, (("Google", 2200), ("Kiwi", 2701)))
+    single = src(EARLY, ("Kiwi", 2600))
+    assert "sadece Kiwi" in cross_check(single, (("Google", 2200),))
+
+
+def test_alert_carries_previous_source_prices():
+    state, _ = evaluate([src(EARLY, ("Google", 2200), ("Kiwi", 2701))], {}, CFG, "t0")
+    _, alerts = evaluate([src(EARLY, ("Google", 2100), ("Kiwi", 2650))], state, CFG, "t1")
+    assert alerts[0].previous_sources == (("Google", 2200), ("Kiwi", 2701))
+    msg = alert_message(alerts, [alerts[0].flight], CFG)
+    assert "iki kaynakta da düştü" in msg and "Kiwi 2.650 TL (önce 2.701 TL)" in msg

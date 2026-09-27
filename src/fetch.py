@@ -43,6 +43,7 @@ def fetch_search(search: dict, currency: str) -> list[Flight]:
                 airline=", ".join(r.airlines),
                 price=int(r.price),
                 search_url=url,
+                sources=(("Google", int(r.price)),),
             )
         )
     # Aynı uçuş birden fazla gelirse en ucuzunu tut
