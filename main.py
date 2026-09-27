@@ -19,16 +19,17 @@ from src.messages import alert_message, summary_message
 from src.models import TR_TZ, Flight, missing_pinned
 
 CONFIG_FILE = Path(__file__).resolve().parent / "config.json"
-FETCH_RETRIES = 2
-RETRY_DELAY_SEC = 10
+FETCH_RETRIES = 4
+RETRY_DELAY_SEC = (20, 60)
 # Düzenli bir robot izi bırakmamak için: başlangıç saati ve sorgular arası bekleme rastgele
 START_JITTER_SEC = (0, 900)
 BETWEEN_QUERIES_SEC = (6, 25)
 
 
-def fetch_all(cfg: dict, jitter: bool) -> tuple[list[Flight], list[str]]:
+def fetch_all(cfg: dict, jitter: bool) -> tuple[list[Flight], list[str], set[tuple[str, str, str]]]:
     flights: list[Flight] = []
     errors: list[str] = []
+    succeeded: set[tuple[str, str, str]] = set()
     searches = random.sample(cfg["searches"], k=len(cfg["searches"]))  # sıra her seferinde farklı
     for i, search in enumerate(searches):
         if jitter and i > 0:
@@ -39,14 +40,15 @@ def fetch_all(cfg: dict, jitter: bool) -> tuple[list[Flight], list[str]]:
                 found = fetch_search(search, cfg["currency"])
                 print(f"{label}: {len(found)} direkt uçuş")
                 flights.extend(found)
+                succeeded.add((search["date"], search["from"], search["to"]))
                 break
             except Exception as exc:  # ağ/parsing hataları: tekrar dene, sonra raporla
                 print(f"{label}: hata (deneme {attempt}): {exc}")
                 if attempt == FETCH_RETRIES:
                     errors.append(f"{label}: {exc}")
                 else:
-                    time.sleep(RETRY_DELAY_SEC)
-    return flights, errors
+                    time.sleep(random.uniform(*RETRY_DELAY_SEC))
+    return flights, errors, succeeded
 
 
 def run(dry_run: bool) -> int:
@@ -67,7 +69,7 @@ def run(dry_run: bool) -> int:
         time.sleep(random.uniform(*START_JITTER_SEC))
 
     state = storage.load_state()
-    flights, errors = fetch_all(cfg, jitter)
+    flights, errors, succeeded = fetch_all(cfg, jitter)
 
     if not flights:
         failures = state.get("consecutive_failures", 0) + 1
@@ -91,7 +93,12 @@ def run(dry_run: bool) -> int:
         notify(summary_message(flights, cfg, f"Günlük özet — {now:%d.%m.%Y}"))
         new_state = {**new_state, "last_summary_date": today}
 
-    missing = missing_pinned(flights, cfg.get("pinned_flights", []))
+    # Sadece araması başarılı olan rotalar için "kayboldu" uyarısı ver
+    checkable = [
+        p for p in cfg.get("pinned_flights", [])
+        if (p["departure"][:10], p["origin"], p["dest"]) in succeeded
+    ]
+    missing = missing_pinned(flights, checkable)
     if missing and new_state.get("pinned_missing_warned") != today:
         notes = "\n".join(f"• {p.get('note', p['departure'])}" for p in missing)
         notify(f"⚠️ Sabitlenmiş uçuş bu kontrolde bulunamadı (dolmuş/iptal olabilir):\n{notes}")
