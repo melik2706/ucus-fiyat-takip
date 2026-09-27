@@ -1,8 +1,7 @@
 name: Uçuş fiyat takibi
 
+# Zamanlanmış takip Oracle sunucusunda çalışır (deploy/ klasörü). Bu iş akışı sadece elle yedek çalıştırma içindir.
 on:
-  schedule:
-    - cron: "11,41 * * * *"  # 30 dakikada bir; main.py ayrıca 0-3 dk rastgele gecikme ekler
   workflow_dispatch: {}
 
 permissions:

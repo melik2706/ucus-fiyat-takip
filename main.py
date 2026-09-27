@@ -79,7 +79,7 @@ def run(dry_run: bool) -> int:
         if not dry_run:
             telegram.send(text, silent=is_quiet)
 
-    jitter = bool(os.environ.get("CI"))  # sadece bulutta (GitHub Actions) rastgele bekle
+    jitter = bool(os.environ.get("CI") or os.environ.get("TRACKER_JITTER"))  # sadece sunucuda rastgele bekle
     if jitter:
         time.sleep(random.uniform(*START_JITTER_SEC))
 

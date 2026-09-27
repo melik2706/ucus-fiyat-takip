@@ -1,11 +1,13 @@
 """State (JSON) ve fiyat geçmişi (CSV) dosyaları."""
 import csv
 import json
+import os
 from pathlib import Path
 
 from .models import Flight
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+# Sunucuda veri, git deposunun dışında tutulur (TRACKER_DATA_DIR); böylece git pull çakışmaz
+DATA_DIR = Path(os.environ.get("TRACKER_DATA_DIR") or Path(__file__).resolve().parent.parent / "data")
 STATE_FILE = DATA_DIR / "state.json"
 HISTORY_FILE = DATA_DIR / "price_history.csv"
 HISTORY_HEADER = ["checked_at", "leg", "origin", "dest", "departure", "arrival", "airline", "price", "google", "kiwi"]

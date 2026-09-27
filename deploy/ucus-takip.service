@@ -1,0 +1,19 @@
+[Unit]
+Description=Ucus fiyat takibi (tek kontrol)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/ucus-fiyat-takip
+EnvironmentFile=/home/ubuntu/ucus-data/.env
+Environment=PYTHONUNBUFFERED=1 PYTHONIOENCODING=utf-8
+# config.json degisikliklerini GitHub'dan al (basarisiz olursa eski kodla devam)
+ExecStartPre=-/usr/bin/git pull --ff-only -q
+ExecStart=/home/ubuntu/ucus-fiyat-takip/.venv/bin/python main.py
+# Ayni sunucudaki takvim asistanini etkilememek icin kaynak sinirlari
+Nice=10
+CPUQuota=50%
+MemoryMax=400M
+TimeoutStartSec=15min

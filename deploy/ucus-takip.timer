@@ -1,0 +1,9 @@
+[Unit]
+Description=Ucus fiyat takibi - 30 dakikada bir
+
+[Timer]
+OnCalendar=*-*-* *:11,41:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
