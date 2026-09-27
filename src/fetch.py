@@ -2,8 +2,27 @@
 from datetime import datetime
 
 from fast_flights import FlightQuery, create_query, get_flights
+from fast_flights.integrations.base import FetchIntegration
+from primp import Client
 
 from .models import Flight
+
+GOOGLE_FLIGHTS_URL = "https://www.google.com/travel/flights"
+# Avrupa'daki sunucularda Google önce çerez onay sayfası ("Devam etmeden önce") gösterir.
+# SOCS çerezi "yalnızca zorunlu çerezler reddedildi" tercihinin standart karşılığıdır.
+CONSENT_COOKIES = {"SOCS": "CAESEwgDEgk0ODE3Nzk3MjQaAmVuIAEaBgiA_LyaBg", "CONSENT": "PENDING+987"}
+
+
+class _ConsentFetch(FetchIntegration):
+    """Onay sayfasını atlayan ve pazarı Türkiye (gl=TR) olarak sabitleyen istek."""
+
+    def fetch_html(self, q, /) -> str:
+        client = Client(impersonate="chrome_145", impersonate_os="macos", referer=True, cookies=CONSENT_COOKIES)
+        params = {**q.params(), "gl": "TR"}
+        html = client.get(GOOGLE_FLIGHTS_URL, params=params).text
+        if "Devam etmeden önce" in html or "Before you continue" in html:
+            raise RuntimeError("Google çerez onay sayfası döndü")
+        return html
 
 
 def _to_dt(simple) -> datetime:
@@ -26,7 +45,7 @@ def fetch_search(search: dict, currency: str) -> list[Flight]:
         currency=currency,
         language="tr",
     )
-    results = get_flights(query)
+    results = get_flights(query, integration=_ConsentFetch())
     url = query.url()
     flights = []
     for r in results:
