@@ -71,10 +71,13 @@ def run(dry_run: bool) -> int:
         print("Takip tarihi geçti, çıkılıyor.")
         return 0
 
+    quiet_start, quiet_end = cfg["quiet_hours_tr"]
+    is_quiet = quiet_start <= now.hour < quiet_end  # gece: bildirimler sessiz gider
+
     def notify(text: str) -> None:
         print("\n----- MESAJ -----\n" + text + "\n-----------------")
         if not dry_run:
-            telegram.send(text)
+            telegram.send(text, silent=is_quiet)
 
     jitter = bool(os.environ.get("CI"))  # sadece bulutta (GitHub Actions) rastgele bekle
     if jitter:

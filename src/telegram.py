@@ -4,13 +4,14 @@ import os
 import urllib.request
 
 
-def send(text: str) -> None:
+def send(text: str, silent: bool = False) -> None:
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat_id = os.environ.get("TELEGRAM_CHAT_ID")
     if not token or not chat_id:
         raise RuntimeError("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID tanımlı değil")
     payload = json.dumps(
-        {"chat_id": chat_id, "text": text, "parse_mode": "HTML", "disable_web_page_preview": True}
+        {"chat_id": chat_id, "text": text, "parse_mode": "HTML", "disable_web_page_preview": True,
+         "disable_notification": silent}
     ).encode()
     req = urllib.request.Request(
         f"https://api.telegram.org/bot{token}/sendMessage",
