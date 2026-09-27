@@ -16,7 +16,7 @@
 - 📉 Plana uyan bir uçuş şimdiye kadar görülen en düşük fiyatının altına inerse
 - 🎯 Fiyat hedefin (`target_price`, varsayılan 2.000 TL) altına inerse
 - 🆕 Plana uyan yeni bir uçuş eklenirse
-- 📋 06:00–23:00 arası her saat başı özet: fiyatlar, en ucuz gidiş+dönüş ve son özetten beri yapılan kontrol sayısı (botun çalıştığının kanıtı). 00:00–06:00 arası özet gönderilmez; gece gelen fiyat uyarıları sessiz bildirimle gider.
+- 📋 06:00–00:00 arası her saat başı özet: fiyatlar, en ucuz gidiş+dönüş ve son özetten beri yapılan kontrol sayısı (botun çalıştığının kanıtı). 01:00–06:00 arası özet gönderilmez; gece gelen fiyat uyarıları sessiz bildirimle gider.
 - ⚠️ Arka arkaya 3 kontrolde veri alınamazsa
 - 3 Kasım geçince takip kendiliğinden durur
 
