@@ -95,15 +95,23 @@ def run(dry_run: bool) -> int:
     new_state, alerts = evaluate(flights, state, cfg, now.isoformat(timespec="minutes"))
     new_state = {**new_state, "consecutive_failures": 0, "last_check": now.isoformat(timespec="minutes")}
 
+    # Özet saatleri (örn. 09:00 ve 21:00): o saatten sonraki ilk kontrolde bir kez gönderilir
+    passed = [h for h in cfg["summary_hours_tr"] if now.hour >= h]
+    slot = f"{today}-{max(passed)}" if passed else None
+
     if is_first_run:
         notify(summary_message(flights, cfg, "Uçuş fiyat takibi başladı"))
-        new_state = {**new_state, "last_summary_date": today}
+        new_state = {**new_state, "last_summary_slot": slot}
     elif alerts:
         notify(alert_message(alerts, flights, cfg))
 
-    if now.hour >= cfg["daily_summary_hour_tr"] and new_state.get("last_summary_date") != today:
-        notify(summary_message(flights, cfg, f"Günlük özet — {now:%d.%m.%Y}"))
-        new_state = {**new_state, "last_summary_date": today}
+    if slot and new_state.get("last_summary_slot") != slot:
+        checks = new_state.get("checks_since_summary", 0) + 1
+        title = f"Özet — {now:%d.%m.%Y %H:%M} (son özetten beri {checks} kontrol)"
+        notify(summary_message(flights, cfg, title))
+        new_state = {**new_state, "last_summary_slot": slot, "checks_since_summary": 0}
+    else:
+        new_state = {**new_state, "checks_since_summary": new_state.get("checks_since_summary", 0) + 1}
 
     # Sadece araması başarılı olan rotalar için "kayboldu" uyarısı ver
     checkable = [

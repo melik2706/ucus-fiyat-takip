@@ -19,6 +19,6 @@
     "return_depart_after": "2026-11-03T15:30",
     "return_depart_before": "2026-11-04T03:00"
   },
-  "daily_summary_hour_tr": 9,
+  "summary_hours_tr": [9, 21],
   "failure_alert_after": 3
 }
