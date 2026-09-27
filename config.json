@@ -1,0 +1,24 @@
+{
+  "currency": "TRY",
+  "target_price": 2000,
+  "track_until": "2026-11-03",
+  "searches": [
+    { "date": "2026-11-02", "from": "GZT", "to": "ESB", "leg": "outbound" },
+    { "date": "2026-11-03", "from": "GZT", "to": "ESB", "leg": "outbound" },
+    { "date": "2026-11-03", "from": "ESB", "to": "GZT", "leg": "return" }
+  ],
+  "pinned_flights": [
+    { "origin": "GZT", "dest": "ESB", "departure": "2026-11-02T21:20", "note": "2 Kasım Pazartesi AJet 21:20-22:35" },
+    { "origin": "GZT", "dest": "ESB", "departure": "2026-11-03T04:50", "note": "3 Kasım Salı AJet 04:50-06:05" },
+    { "origin": "ESB", "dest": "GZT", "departure": "2026-11-03T19:25", "note": "3 Kasım Salı dönüş AJet 19:25-20:40" },
+    { "origin": "ESB", "dest": "GZT", "departure": "2026-11-03T23:50", "note": "3 Kasım Salı dönüş AJet 23:50-01:05" }
+  ],
+  "plan": {
+    "outbound_depart_after": "2026-11-02T17:00",
+    "outbound_arrive_by": "2026-11-03T07:45",
+    "return_depart_after": "2026-11-03T15:30",
+    "return_depart_before": "2026-11-04T03:00"
+  },
+  "daily_summary_hour_tr": 9,
+  "failure_alert_after": 3
+}
