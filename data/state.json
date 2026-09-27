@@ -1,0 +1,62 @@
+{
+  "flights": {
+    "ESB-GZT_2026-11-03T07:50_AJet": {
+      "leg": "return",
+      "price": 2214,
+      "min_price": 2214,
+      "first_seen": "2026-09-27T16:25+03:00",
+      "last_seen": "2026-09-27T16:25+03:00",
+      "fits_plan": false,
+      "target_alerted_price": null
+    },
+    "ESB-GZT_2026-11-03T19:25_AJet": {
+      "leg": "return",
+      "price": 2214,
+      "min_price": 2214,
+      "first_seen": "2026-09-27T16:25+03:00",
+      "last_seen": "2026-09-27T16:25+03:00",
+      "fits_plan": true,
+      "target_alerted_price": null
+    },
+    "ESB-GZT_2026-11-03T23:50_AJet": {
+      "leg": "return",
+      "price": 2214,
+      "min_price": 2214,
+      "first_seen": "2026-09-27T16:25+03:00",
+      "last_seen": "2026-09-27T16:25+03:00",
+      "fits_plan": true,
+      "target_alerted_price": null
+    },
+    "GZT-ESB_2026-11-03T04:50_AJet": {
+      "leg": "outbound",
+      "price": 2200,
+      "min_price": 2200,
+      "first_seen": "2026-09-27T16:25+03:00",
+      "last_seen": "2026-09-27T16:25+03:00",
+      "fits_plan": true,
+      "target_alerted_price": null
+    },
+    "GZT-ESB_2026-11-03T09:45_AJet": {
+      "leg": "outbound",
+      "price": 2200,
+      "min_price": 2200,
+      "first_seen": "2026-09-27T16:25+03:00",
+      "last_seen": "2026-09-27T16:25+03:00",
+      "fits_plan": false,
+      "target_alerted_price": null
+    },
+    "GZT-ESB_2026-11-03T21:20_AJet": {
+      "leg": "outbound",
+      "price": 2200,
+      "min_price": 2200,
+      "first_seen": "2026-09-27T16:25+03:00",
+      "last_seen": "2026-09-27T16:25+03:00",
+      "fits_plan": false,
+      "target_alerted_price": null
+    }
+  },
+  "consecutive_failures": 0,
+  "last_check": "2026-09-27T16:25+03:00",
+  "last_summary_date": "2026-09-27",
+  "pinned_missing_warned": "2026-09-27"
+}
