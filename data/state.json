@@ -9,7 +9,7 @@
       },
       "min_price": 2200,
       "first_seen": "2026-09-27T16:43+03:00",
-      "last_seen": "2026-09-27T16:43+03:00",
+      "last_seen": "2026-09-27T19:53+03:00",
       "fits_plan": false,
       "target_alerted_price": null
     },
@@ -22,7 +22,7 @@
       },
       "min_price": 2200,
       "first_seen": "2026-09-27T16:43+03:00",
-      "last_seen": "2026-09-27T16:43+03:00",
+      "last_seen": "2026-09-27T19:53+03:00",
       "fits_plan": true,
       "target_alerted_price": null
     },
@@ -35,7 +35,7 @@
       },
       "min_price": 2400,
       "first_seen": "2026-09-27T16:43+03:00",
-      "last_seen": "2026-09-27T16:43+03:00",
+      "last_seen": "2026-09-27T19:53+03:00",
       "fits_plan": false,
       "target_alerted_price": null
     },
@@ -48,7 +48,7 @@
       },
       "min_price": 2214,
       "first_seen": "2026-09-27T16:43+03:00",
-      "last_seen": "2026-09-27T16:43+03:00",
+      "last_seen": "2026-09-27T19:53+03:00",
       "fits_plan": true,
       "target_alerted_price": null
     },
@@ -61,7 +61,7 @@
       },
       "min_price": 2214,
       "first_seen": "2026-09-27T16:43+03:00",
-      "last_seen": "2026-09-27T16:43+03:00",
+      "last_seen": "2026-09-27T19:53+03:00",
       "fits_plan": false,
       "target_alerted_price": null
     },
@@ -74,7 +74,7 @@
       },
       "min_price": 2214,
       "first_seen": "2026-09-27T16:43+03:00",
-      "last_seen": "2026-09-27T16:43+03:00",
+      "last_seen": "2026-09-27T19:53+03:00",
       "fits_plan": true,
       "target_alerted_price": null
     },
@@ -87,7 +87,7 @@
       },
       "min_price": 2200,
       "first_seen": "2026-09-27T16:43+03:00",
-      "last_seen": "2026-09-27T16:43+03:00",
+      "last_seen": "2026-09-27T19:53+03:00",
       "fits_plan": true,
       "target_alerted_price": null
     },
@@ -100,7 +100,7 @@
       },
       "min_price": 2200,
       "first_seen": "2026-09-27T16:43+03:00",
-      "last_seen": "2026-09-27T16:43+03:00",
+      "last_seen": "2026-09-27T19:53+03:00",
       "fits_plan": false,
       "target_alerted_price": null
     },
@@ -113,12 +113,14 @@
       },
       "min_price": 2200,
       "first_seen": "2026-09-27T16:43+03:00",
-      "last_seen": "2026-09-27T16:43+03:00",
+      "last_seen": "2026-09-27T19:53+03:00",
       "fits_plan": false,
       "target_alerted_price": null
     }
   },
   "consecutive_failures": 0,
-  "last_check": "2026-09-27T16:43+03:00",
-  "last_summary_date": "2026-09-27"
+  "last_check": "2026-09-27T19:53+03:00",
+  "last_summary_date": "2026-09-27",
+  "last_summary_slot": "2026-09-27-9",
+  "checks_since_summary": 0
 }
