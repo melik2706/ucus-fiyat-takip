@@ -20,6 +20,15 @@
 - ⚠️ Arka arkaya 3 kontrolde veri alınamazsa
 - 3 Kasım geçince takip kendiliğinden durur
 
+## Nerede çalışır
+Oracle Cloud Always Free sunucusunda (130.61.173.188, takvim asistanıyla aynı sunucu) `ucus-takip.timer` ile her saatin :11 ve :41'inde çalışır.
+- Kod: `~/ucus-fiyat-takip` (her çalıştırmada `git pull` ile güncellenir; config değişikliği için push yeterli)
+- Veri ve gizli ayarlar: `~/ucus-data` (`state.json`, `price_history.csv`, `.env`)
+- Kaynak sınırı: CPUQuota=50%, MemoryMax=400M. Bir kontrol ~0,4 sn CPU kullanır.
+- Log: `ssh -i ~/.ssh/oracle_asistan ubuntu@130.61.173.188 "journalctl -u ucus-takip -n 50"`
+- Kurulum/güncelleme: `./deploy/sunucuya_kur.sh`. Takibi kapatma: `sudo systemctl disable --now ucus-takip.timer`
+- GitHub Actions iş akışı sadece elle yedek çalıştırma içindir; GitHub'ın zamanlayıcısı güvenilir tetiklenmediği için taşındı.
+
 ## Kurulum
 1. Telegram'da @BotFather'a `/newbot` yazıp token'ı al, sonra bota bir mesaj gönder.
 2. `python telegram_setup.py <TOKEN>` komutu chat ID'yi yazdırır ve test mesajı gönderir.
